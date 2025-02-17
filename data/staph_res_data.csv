@@ -1,0 +1,19 @@
+treat,rep,num_tested,resistant,susceptible,unculturable,state,majority
+clone1,1,12,0,8,4,persister,susceptible
+clone1,3,12,12,0,0,recovered,resistant
+clone2,3,12,2,0,10,persister,resistant / unculturable
+clone2,5,12,12,0,0,recovered,resistant
+clone2,6,12,12,0,0,recovered,resistant
+clone3,3,12,12,0,0,recovered,resistant
+clone3,6,12,1,0,11,persister,resistant / unculturable
+mix,1,0,0,0,12,persister,unculturable
+mix,2,0,0,0,12,persister,unculturable
+mix,3,0,0,0,12,persister,unculturable
+mix,4,12,0,12,0,recovered,susceptible
+mix,5,0,0,0,12,persister,unculturable
+mix,6,12,12,0,0,recovered,resistant
+mix,8,12,12,0,0,recovered,resistant
+mix,9,12,12,0,0,recovered,resistant
+mix,10,0,0,0,12,persister,unculturable
+mix,11,12,11,0,1,recovered,resistant
+mix,12,12,12,0,0,recovered,resistant
