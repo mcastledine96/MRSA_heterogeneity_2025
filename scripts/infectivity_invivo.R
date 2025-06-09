@@ -86,3 +86,5 @@ ggplot(bdat_n, aes(x = bact_time, y = lden)) +
   palettetown::scale_fill_poke(pokemon = "Roselia", spread = 11, labels = c("ISP", "Day 6 (pleural; pre-dose)","Day 6 (pleural; post-dose)")) +
   scale_x_discrete(labels = c("Day 0\n(pleural fluid)","Day 0\n(pus)","Day 6\n(BAL)")) +
   labs(fill = "Phage")
+
+ggsave("plots/fig1.png", plot = last_plot(), units="in", width=7, height=6, dpi=300)

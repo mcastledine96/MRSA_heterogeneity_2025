@@ -32,6 +32,8 @@ ggplot() +
   facet_wrap(~treat, labeller = labeller(treat = fac_labs))+
   scale_linetype_manual(values = c('solid', 'dotted'),labels = c('Absent', 'Present'))
 
+ggsave("plots/fig2.png", plot = last_plot(), units="in", width=7, height=6, dpi=300)
+
 #summary statistics of persister and recovered densities
 
 bact_p <- filter(bact, phage == "Y" & dil_fact == 5 & time == 't6')
@@ -124,12 +126,18 @@ res <- read.csv('data/staph_res_data.csv',header=T)
 
 res2 <- res[,c(1,2,8)]
 
+res2$treat[res2$treat == 'clone1'] <- 'Isolate1'
+res2$treat[res2$treat == 'clone2'] <- 'Isolate2'
+res2$treat[res2$treat == 'clone3'] <- 'Isolate3'
+res2$treat[res2$treat == 'clone4'] <- 'Isolate4'
+
 bact6 <- filter(bact, time == 't6' & phage == 'Y')
 
 resb <- merge(res2, bact6, by = c('treat', 'rep'))
 resb2 <- merge(bact6, res2, by = c('treat', 'rep'))
 
-resb2$majority[resb2$majority == 'resistant / unculturable'] <- 'unculturable'
+resb2$majority[resb2$majority == 'resistant / unculturable'] <- 'sxlow-growing'
+resb2$majority[resb2$majority == 'unculturable'] <- 'sxlow-growing'
 
 a <- ggplot(resb2, aes(x = treat2, y = lden)) +
   geom_point(aes(fill = majority), size = 3, position = position_jitter(0.1), shape = 21, col = 'black') +
@@ -141,7 +149,7 @@ a <- ggplot(resb2, aes(x = treat2, y = lden)) +
   xlab('Treatment') +
   scale_x_discrete(labels = c('Isolate', 'Mixed-isolate')) +
   labs(fill = 'Dominant\nPhenotype', title = '(a)') +
-  scale_fill_manual(values = c('#489E00', 'black', '#FF8751'), labels = c('Phage\nresistant', 'Phage\nsusceptible', 'Unculturable')) 
+  scale_fill_manual(values = c('#489E00', 'black', '#FF8751'), labels = c('Phage\nresistant', 'Phage\nsusceptible', 'Slow-growing')) 
 
 a
 
@@ -212,32 +220,17 @@ ggplot() +
   geom_point(data = pden_m, aes(x = time, y = m_den, group = interaction(time, treat), col = treat2), size = 2, position = position_dodge(0.2)) +
   geom_line(data = pden_m, aes(x = time, y = m_den, group = treat, col = treat2), linewidth = 1, position = position_dodge(0.2)) +
   geom_errorbar(data = pden_m, aes(x = time, ymin = m_den-se, ymax = m_den+se, group = interaction(time, treat), col = treat2), size = 1, width = 0.1, position = position_dodge(0.2)) +
-  theme(axis.text.y = element_text(size = 13, colour = "black"), axis.title = element_text(size = 14), axis.text.x = element_text(size = 12, colour = "black"), title = element_text(size = 14),legend.position = "bottom", legend.text = element_text(size = 11), legend.title = element_text(size = 11)) +
+  theme(axis.text.y = element_text(size = 13, colour = "black"), axis.title = element_text(size = 14), axis.text.x = element_text(size = 12, colour = "black"), title = element_text(size = 14),legend.position = "bottom", legend.text = element_text(size = 11), legend.title = element_text(size = 12), strip.background = element_blank(), strip.text = element_text(size = 12, hjust = 0)) +
   ylab("Phage density log10(PFU/mL)") +
   xlab("Time (days)") +
   scale_x_discrete(labels = c("1","2","3","4","5","6")) +
-  palettetown::scale_color_poke(pokemon = "charizard", spread = 5) +
-  geom_hline(yintercept = input_d, linetype = 'dashed') +
-  facet_wrap(~treat,labeller = labeller(treat = fac_labs)) +
-  geom_text(data = d_mods_summary, aes(x = time, y = 9.5, label = sig)) +
-  labs(color = 'Treatment')
-
-ggplot() +
-  theme_bw() +
-  geom_point(data = pden, aes(x = time, y = lden, group = interaction(time, treat), col = treat2), alpha = 0.5) +
-  geom_line(data = pden, aes(x = time, y = lden, group = interaction(treat, rep), col = treat2), alpha = 0.2) +
-  geom_point(data = pden_m, aes(x = time, y = m_den, group = interaction(time, treat), col = treat2), size = 2, position = position_dodge(0.2)) +
-  geom_line(data = pden_m, aes(x = time, y = m_den, group = treat, col = treat2), linewidth = 1, position = position_dodge(0.2)) +
-  geom_errorbar(data = pden_m, aes(x = time, ymin = m_den-se, ymax = m_den+se, group = interaction(time, treat), col = treat2), size = 1, width = 0.1, position = position_dodge(0.2)) +
-  theme(axis.text.y = element_text(size = 13, colour = "black"), axis.title = element_text(size = 14), axis.text.x = element_text(size = 12, colour = "black"), title = element_text(size = 14),legend.position = "bottom", legend.text = element_text(size = 11), legend.title = element_text(size = 11), strip.background = element_blank(), strip.text = element_text(size = 12, hjust = 0)) +
-  ylab("Phage density log10(PFU/mL)") +
-  xlab("Time (days)") +
-  scale_x_discrete(labels = c("1","2","3","4","5","6")) +
-  palettetown::scale_color_poke(pokemon = "charizard", spread = 5, labels = c('Clone', 'Mixed-clone')) +
+  palettetown::scale_color_poke(pokemon = "charizard", spread = 5, labels = c('Isolate', 'Mixed-Isolate')) +
   geom_hline(yintercept = input_d, linetype = 'dashed') +
   facet_wrap(~treat, labeller = labeller(treat = fac_labs))+
   geom_text(data = d_mods_summary, aes(x = time, y = 9.5, label = sig)) +
   labs(color = 'Treatment')
+
+ggsave("plots/fig3.png", plot = last_plot(), units="in", width=7, height=6, dpi=300)
 
 d_sum2 <- d_mods_summary
 d_sum2 <- d_sum2[,c(1,2,9:11,17)]
@@ -274,13 +267,13 @@ res2$majority[res2$majority == 'resistant / unculturable'] <- 'unculturable'
 
 res2$rep2 <- interaction(res2$treat, res2$rep)
 
-pden6$majority[pden6$rep2 == 'Isolate1.1'] <- 'susceptible'
-pden6$majority[pden6$rep2 == 'Isolate1.3'] <- 'resistant'
-pden6$majority[pden6$rep2 == 'Isolate2.3'] <- 'unculturable'
-pden6$majority[pden6$rep2 == 'Isolate2.5'] <- 'resistant'
-pden6$majority[pden6$rep2 == 'Isolate2.6'] <- 'resistant'
-pden6$majority[pden6$rep2 == 'Isolate3.3'] <- 'resistant'
-pden6$majority[pden6$rep2 == 'Isolate3.6'] <- 'unculturable'
+pden6$majority[pden6$rep2 == 'clone1.1'] <- 'susceptible'
+pden6$majority[pden6$rep2 == 'clone1.3'] <- 'resistant'
+pden6$majority[pden6$rep2 == 'clone2.3'] <- 'unculturable'
+pden6$majority[pden6$rep2 == 'clone2.5'] <- 'resistant'
+pden6$majority[pden6$rep2 == 'clone2.6'] <- 'resistant'
+pden6$majority[pden6$rep2 == 'clone3.3'] <- 'resistant'
+pden6$majority[pden6$rep2 == 'clone3.6'] <- 'unculturable'
 pden6$majority[pden6$rep2 == 'mix.1'] <- 'unculturable'
 pden6$majority[pden6$rep2 == 'mix.2'] <- 'unculturable'
 pden6$majority[pden6$rep2 == 'mix.3'] <- 'unculturable'
@@ -310,7 +303,7 @@ b <- ggplot(pden6, aes(x = majority, y = lden)) +
   theme_bw() +
   MicrobioUoE::geom_pretty_boxplot(col = 'black', fill = 'black')+
   geom_point(shape = 21, size = 3, position = position_jitter(0.1), aes(fill = majority))  +
-  scale_x_discrete(labels = c('Extinct', 'Recovered\nand resistant', 'Low-density\nand unculturable')) +
+  scale_x_discrete(labels = c('Extinct', 'Recovered\nand resistant', 'Low-density\nand slow-growing')) +
   xlab('Bacteria population phenotype')+
   theme(axis.text.y = element_text(size = 13, colour = "black"), axis.title = element_text(size = 14), axis.text.x = element_text(size = 12, colour = "black"), title = element_text(size = 12), legend.position = 'none') +
   ylab('Phage density on day six\nlog10(PFU/mL)') +
@@ -321,6 +314,8 @@ b <- ggplot(pden6, aes(x = majority, y = lden)) +
 library(patchwork)
 
 a + b + plot_layout()
+
+ggsave("plots/fig4.png", plot = last_plot(), units="in", width=10, height=6, dpi=300)
 
 #extinct vs resistant are not significantly different. Unculturable has sig higher phage densities overall. 
 #is this higher than baseline inoculum?
